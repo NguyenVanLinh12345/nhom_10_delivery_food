@@ -10,6 +10,9 @@ import {
   selectBasketItemsWithId,
   removeFromBasket,
 } from "../slices/basketSlice";
+
+// Cái này là ở trong một nhà hàng
+// Đây là cái hiển thị ra món ăn của nhà hàng đó
 const DishRow = ({ id, name, description, price, image }) => {
   const [isPressed, setIsPressed] = useState(false);
 

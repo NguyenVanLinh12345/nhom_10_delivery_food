@@ -5,7 +5,8 @@ import { StarIcon, MapPinIcon } from "react-native-heroicons/solid";
 import { urlFor } from "../sanity";
 import { useNavigation } from "@react-navigation/native";
 
-export default function RestaurantCard({
+// Đây là cái hiển thị các nhà hàng bên dưới dưới dạng thẻ
+function RestaurantCard({
   id,
   imgUrl,
   title,
@@ -58,3 +59,6 @@ export default function RestaurantCard({
     </TouchableOpacity>
   );
 }
+
+
+export default RestaurantCard;

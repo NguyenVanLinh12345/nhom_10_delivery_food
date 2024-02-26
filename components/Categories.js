@@ -2,7 +2,9 @@ import { View, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import CategoryCard from "./CategoryCard";
 import SanityClient, { urlFor } from "../sanity";
-const Categories = () => {
+
+// Đây là cái danh sách category nằm ở ngay dưới ô tìm kiếm
+function Categories() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {

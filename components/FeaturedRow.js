@@ -4,7 +4,8 @@ import { ArrowRightIcon } from "react-native-heroicons/outline";
 import RestaurantCard from "./RestaurantCard";
 import SanityClient from "../sanity";
 
-const FeaturedRow = ({ title, description, id }) => {
+// Cái này là danh sách nhà hàng hiển thị theo chiều ngang
+function FeaturedRow({ title, description, id }) {
   const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const FeaturedRow = ({ title, description, id }) => {
   }, [id]);
 
 
-  
+
 
   return (
     <View>

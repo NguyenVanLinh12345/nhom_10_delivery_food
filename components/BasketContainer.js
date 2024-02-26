@@ -4,6 +4,9 @@ import { useSelector } from "react-redux";
 import { selectBasketItems, selectBasketTotal } from "../slices/basketSlice";
 import { useNavigation } from "@react-navigation/native";
 import Currency from "react-currency-formatter";
+
+// Đây là cái ô màu xanh hiển thị ra khi có đơn hàng 
+// Khi bấm vào cái này sẽ chuyển đến giỏ hàng (Basket = giỏ hàng)
 const BasketContainer = () => {
   const items = useSelector(selectBasketItems);
   const basketTotalPrice = useSelector(selectBasketTotal);
