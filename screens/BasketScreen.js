@@ -1,9 +1,9 @@
+import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, Image } from "react-native";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRestaurant } from "../slices/restaurantSlice";
 import { removeFromBasket, selectBasketItems, selectBasketTotal } from "../slices/basketSlice";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { XCircleIcon } from "react-native-heroicons/solid";
 import { ScrollView } from "react-native-gesture-handler";
@@ -76,7 +76,7 @@ const BasketScreen = ({ navigation }) => {
               <Text className="flex-1">{items[0]?.name}</Text>
 
               <Text className="text-gray-600 text-xs">
-                <Currency quantity={items[0]?.price} currency="INR" />
+                <Currency quantity={items[0]?.price} currency="INR" z />
               </Text>
 
               <TouchableOpacity>

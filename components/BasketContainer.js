@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectBasketItems, selectBasketTotal } from "../slices/basketSlice";
 import { useNavigation } from "@react-navigation/native";
-import Currency from "react-currency-formatter";
+// import Currency from "react-currency-formatter";
 
 // Đây là cái ô màu xanh hiển thị ra khi có đơn hàng 
 // Khi bấm vào cái này sẽ chuyển đến giỏ hàng (Basket = giỏ hàng)
@@ -23,8 +23,7 @@ return null
         </Text>
         <Text className="flex-1 text-white font-extrabold text-center">View basket</Text>
         <Text className="text-lg text-white font-extrabold">
-          <Currency quantity={basketTotalPrice} currency="INR" />
-        
+          {/* <Currency quantity={basketTotalPrice} currency="INR" /> */}
         </Text>
       </TouchableOpacity>
     </View>

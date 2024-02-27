@@ -63,7 +63,11 @@ const HomeScreen = () => {
               Current location <ChevronDownIcon size={20} color="#00CCBB" />
             </Text>
           </View>
-          <UserIcon size={25} color="#00CCBB" />
+          {/* Đây là icon người, dùng để login */}
+          <UserIcon onPress={() => {
+            navigation.navigate("Login");
+          }} size={25} color="#00CCBB" />
+
         </View>
 
         {/* search bar */}

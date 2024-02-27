@@ -54,6 +54,7 @@ const RestaurantScreen = ({ route, navigation }) => {
             <ArrowLeftIcon size={20} color="#00ccbb" />
           </TouchableOpacity>
         </View>
+        
         <View className="bg-white">
           <View className="px-4 pt-4">
             <Text className="text-3xl font-bold ">{title}</Text>
