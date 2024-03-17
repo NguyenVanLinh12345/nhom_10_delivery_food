@@ -76,13 +76,13 @@ const RestaurantScreen = ({ route, navigation }) => {
           </View>
           <TouchableOpacity className="flex-row items-center space-x-2 p-4 border-y-2 border-gray-100 ">
             <QuestionMarkCircleIcon color="gray" opacity={0.5} size={20} />
-            <Text className="pl-2 flex-1 text-sm font-bold">Have a food allergy ?</Text>
+            <Text className="pl-2 flex-1 text-sm font-bold">Có bị dị ứng thực phẩm không?</Text>
             <ChevronRightIcon color="#00ccbb" />
           </TouchableOpacity>
         </View>
         <View className="pb-36">
           <Text className="px-4 pt-6 mb-3 font-bold text-xl">
-            Menu
+            Thực đơn
             {/* {DishRows} */}
           </Text>
           {dishes.map((dish) => (

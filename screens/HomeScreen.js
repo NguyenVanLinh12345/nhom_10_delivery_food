@@ -8,6 +8,7 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
   AdjustmentsVerticalIcon,
+  ShoppingCartIcon,
 } from "react-native-heroicons/outline";
 import Categories from "../components/Categories";
 import FeaturedRow from "../components/FeaturedRow";
@@ -63,6 +64,10 @@ const HomeScreen = () => {
               Current location <ChevronDownIcon size={20} color="#00CCBB" />
             </Text>
           </View>
+
+          <ShoppingCartIcon onPress={() => {
+            navigation.navigate("OrderList");
+          }} size={25} color="#00CCBB" />
           {/* Đây là icon người, dùng để login */}
           <UserIcon onPress={() => {
             navigation.navigate("Login");
