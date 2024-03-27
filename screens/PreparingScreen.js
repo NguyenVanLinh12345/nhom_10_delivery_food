@@ -7,8 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const PreparingScreen = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate("Delivery");
-    }, 4000);
+      navigation.navigate("OrderDetail");
+    }, 2000);
   }, [navigation]);
 
   return (
@@ -25,7 +25,7 @@ const PreparingScreen = ({ navigation }) => {
         iterationCount={1}
         className="text-md my-10 px-4 text-white font-bold text-center"
       >
-        Assigning Delivery partner to your order
+        Đơn hàng đang được chuẩn bị
       </Animatable.Text>
 
       <Progress.Circle size={60} indeterminate={true} color="white" />

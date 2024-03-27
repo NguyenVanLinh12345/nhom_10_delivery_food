@@ -21,7 +21,7 @@ return null
         <Text className="text-white font-extrabold text-xl rounded-md bg-[#01a296] py-1 px-2">
           {items.length}
         </Text>
-        <Text className="flex-1 text-white font-extrabold text-center">View basket</Text>
+        <Text className="flex-1 text-white font-extrabold text-center">Xem giỏ hàng</Text>
         <Text className="text-lg text-white font-extrabold">
           {/* <Currency quantity={basketTotalPrice} currency="INR" /> */}
         </Text>

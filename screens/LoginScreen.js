@@ -128,13 +128,26 @@ function LoginScreen({ route, navigation }) {
                         style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
-                            marginBottom: 30,
+                            marginBottom: 16,
                         }}>
                         <Text>New to the app?</Text>
                         <TouchableOpacity
+                            className="ml-1"
                             onPress={() => navigation.navigate('Register')}
                         >
-                            <Text style={{ color: '#AD40AF', fontWeight: '700' }}> Register</Text>
+                            <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            marginBottom: 16,
+                        }}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('RestaurantRegister')}
+                        >
+                            <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Tạo tài khoản bán hàng</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
