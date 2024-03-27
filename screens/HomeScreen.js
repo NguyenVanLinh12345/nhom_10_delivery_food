@@ -1,6 +1,6 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native";
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import { Image, LogBox, ScrollView, Text, TextInput, View } from "react-native";
+import { TouchableOpacity, Image, LogBox, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -52,12 +52,14 @@ const HomeScreen = () => {
       <SafeAreaView className="bg-white pt-5">
         {/* header */}
         <View className="flex-row pb-3 items-center mx-4 space-x-2">
-          <Image
-            source={{
-              uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
-            }}
-            className=" h-7 w-7 bg-gray-300 p-4  rounded-full"
-          />
+          <TouchableOpacity onPress={() => navigation.navigate("User")}>
+            <Image
+              source={{
+                uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+              }}
+              className=" h-7 w-7 bg-gray-300 p-4  rounded-full"
+            />
+          </TouchableOpacity>
           <View className="flex-1">
             <Text className="font-bold text-gray-400 text-xs">Deliver Now</Text>
             <Text className="font-bold text-xl  ">
