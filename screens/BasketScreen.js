@@ -43,31 +43,29 @@ const BasketScreen = ({ navigation }) => {
       <View className="flex-1 bg-gray-100">
         <View className="p-5 border-b border-[#00ccbb] bg-white shadow-sm">
           <View>
-            <Text className="text-lg font-bold text-center">Basket</Text>
-            <Text className="text-center text-gray-400">{restaurant.title}</Text>
+            <Text className="text-lg font-bold text-center">Đơn hàng</Text>
+            <Text className="text-center text-gray-400">Dê Ninh Bình</Text>
           </View>
 
           <TouchableOpacity
             onPress={() => navigation.goBack(null)}
-            className="rounded-full bg-gray-100 absolute   top-3  right-2 "
+            className="rounded-full bg-gray-100 absolute   top-3  right-2"
           >
             <XCircleIcon color="#00ccbb" height={50} width={50} />
           </TouchableOpacity>
         </View>
 
         <View className="flex-row items-center space-x-4 px-4 py-3 bg-white my-5">
-          {/* <Image
-            source={{
-              uri: "https://plus.unsplash.com/premium_photo-1661766131927-5026561fd0cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-            }}
-            className="w-7 h-7 bg-gray-300 p-4 rounded-full"
-          /> */}
           <Ionicons name="fast-food" color="#2c9935" size={30} />
-
           <Text className="flex-1"> Đặt hàng ngay</Text>
           <TouchableOpacity onPress={() => changeTimeDelivery()}>
             <Text className="text-[#00ccbb]">Thay đổi</Text>
           </TouchableOpacity>
+        </View>
+
+        <View className="flex-row items-center space-x-4 px-4 py-3 bg-white my-1">
+          <Ionicons name="fast-food" color="#2c9935" size={30} />
+          <Text className="flex-1"> Giao hàng trong 10-15 phút</Text>
         </View>
 
         <ScrollView className="divide-y divide-gray-200">
@@ -83,8 +81,11 @@ const BasketScreen = ({ navigation }) => {
               />
               <Text className="flex-1">{items[0]?.name}</Text>
 
+              <Text className="text-gray-600 text-xs line-through">
+                <Currency quantity={items[0]?.price} currency="VND" z />
+              </Text>
               <Text className="text-gray-600 text-xs">
-                <Currency quantity={items[0]?.price} currency="INR" z />
+                <Currency quantity={items[0]?.price - 100} currency="VND" z />
               </Text>
 
               <TouchableOpacity>
@@ -101,21 +102,33 @@ const BasketScreen = ({ navigation }) => {
 
         <View className="p-5 bg-white mt-5 space-y-4 ">
           <View className="flex-row justify-between">
-            <Text className="text-gray-400">Subtotal</Text>
+            <Text className="text-gray-400">Tổng phụ</Text>
             <Text className="text-gray-400">
-              <Currency quantity={basketTotal} currency="INR" />
+              <Currency quantity={basketTotal} currency="VND" />
             </Text>
           </View>
           <View className="flex-row justify-between">
-            <Text className="text-gray-400">Delivery Fee</Text>
+            <Text className="text-gray-400">Phí giao hàng</Text>
             <Text className="text-gray-400">
-              <Currency quantity={13.3} currency="INR" />
+              <Currency quantity={13.3} currency="VND" />
             </Text>
           </View>
           <View className="flex-row justify-between">
-            <Text className="text-gray-400 font-bold">Order Total</Text>
+            <Text className="text-gray-400">Giảm giá từ khuyến mại</Text>
+            <Text className="text-gray-400">
+              <Currency quantity={-15} currency="VND" />
+            </Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-gray-400">Giảm giá từ tích điểm</Text>
+            <Text className="text-gray-400">
+              <Currency quantity={-15} currency="VND" />
+            </Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-gray-400 font-bold">Tổng</Text>
             <Text className=" text-[#1f1f20] font-extrabold">
-              <Currency quantity={basketTotal + 13.3} currency="INR" />
+              <Currency quantity={basketTotal + 13.3} currency="VND" />
             </Text>
           </View>
 
@@ -123,7 +136,7 @@ const BasketScreen = ({ navigation }) => {
             className="rounded-lg bg-[#00ccbb] p-4 shadow-xl"
             onPress={() => navigation.navigate("Prepare")}
           >
-            <Text className="text-center text-white text-lg font-bold">Place Order</Text>
+            <Text className="text-center text-white text-lg font-bold">Mua</Text>
           </TouchableOpacity>
         </View>
       </View>

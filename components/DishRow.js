@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
-// import Currency from "react-currency-formatter";
+import Currency from "react-currency-formatter";
 import { urlFor } from "../sanity";
 import { MinusCircleIcon, PlusCircleIcon } from "react-native-heroicons/solid";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,8 +38,11 @@ const DishRow = ({ id, name, description, price, image }) => {
           <View className="flex-1  ">
             <Text className="text-lg mb-1 font-bold">{name}</Text>
             <Text className="text-gray-400 text-xs">{description}</Text>
-            <Text className="text-gray-400 mt-2 ">
-              {/* <Currency quantity={price} currency="INR" /> */}
+            <Text className="text-gray-400 mt-2 line-through">
+              <Currency quantity={ 100000 } currency="VND" />
+            </Text>
+            <Text className="text-gray-600 mt-2 ">
+              <Currency quantity={ 8000 } currency="VND" />
             </Text>
           </View>
           <View>
