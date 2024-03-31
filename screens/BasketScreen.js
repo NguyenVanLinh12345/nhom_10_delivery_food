@@ -28,10 +28,18 @@ const BasketScreen = ({ navigation }) => {
     setGroupItemsBasket(groupedItems);
   }, [items]);
 
+  const changeTimeDelivery = () => {
+    console.log("Thay doi thoi gian giao hang");
+  }
+
   console.log(groupItemsBasket);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+       {/* <View className="bg-red-600 rounded-lg fixed top-20 left-0 right-0 z-10" >
+        <Text>hehsdjjfe sdfsdfsd sdsdfsdfsd s dsdsds</Text>
+      </View> */}
+
       <View className="flex-1 bg-gray-100">
         <View className="p-5 border-b border-[#00ccbb] bg-white shadow-sm">
           <View>
@@ -52,13 +60,13 @@ const BasketScreen = ({ navigation }) => {
             source={{
               uri: "https://plus.unsplash.com/premium_photo-1661766131927-5026561fd0cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
             }}
-            className="w-7 h-7 bg-gray-300 p-4 rounded-full" */}
-          {/* /> */}
+            className="w-7 h-7 bg-gray-300 p-4 rounded-full"
+          /> */}
           <Ionicons name="fast-food" color="#2c9935" size={30} />
 
-          <Text className="flex-1"> Deliver in 10-15 mins</Text>
-          <TouchableOpacity>
-            <Text className="text-[#00ccbb]">Change</Text>
+          <Text className="flex-1"> Đặt hàng ngay</Text>
+          <TouchableOpacity onPress={() => changeTimeDelivery()}>
+            <Text className="text-[#00ccbb]">Thay đổi</Text>
           </TouchableOpacity>
         </View>
 
