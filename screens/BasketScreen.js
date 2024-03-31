@@ -28,10 +28,18 @@ const BasketScreen = ({ navigation }) => {
     setGroupItemsBasket(groupedItems);
   }, [items]);
 
+  const changeTimeDelivery = () => {
+    console.log("Thay doi thoi gian giao hang");
+  }
+
   console.log(groupItemsBasket);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+       {/* <View className="bg-red-600 rounded-lg fixed top-20 left-0 right-0 z-10" >
+        <Text>hehsdjjfe sdfsdfsd sdsdfsdfsd s dsdsds</Text>
+      </View> */}
+
       <View className="flex-1 bg-gray-100">
         <View className="p-5 border-b border-[#00ccbb] bg-white shadow-sm">
           <View>
@@ -47,20 +55,18 @@ const BasketScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        <View className="flex-row items-center space-x-4 px-4 py-3 bg-white my-5">
+          <Ionicons name="fast-food" color="#2c9935" size={30} />
+          <Text className="flex-1"> Đặt hàng ngay</Text>
+          <TouchableOpacity onPress={() => changeTimeDelivery()}>
+            <Text className="text-[#00ccbb]">Thay đổi</Text>
+          </TouchableOpacity>
+        </View>
+
         <View className="flex-row items-center space-x-4 px-4 py-3 bg-white my-1">
           <Ionicons name="fast-food" color="#2c9935" size={30} />
           <Text className="flex-1"> Giao hàng trong 10-15 phút</Text>
-          {/* <TouchableOpacity>
-            <Text className="text-[#00ccbb]">Thay đổi</Text>
-          </TouchableOpacity> */}
         </View>
-        {/* <View className="flex-row items-center space-x-4 px-4 py-3 bg-white my-2">
-          <Ionicons name="trending-down" color="#2c9935" size={30} />
-          <Text className="flex-1">Giảm 6% tổng giá trị đơn hàng</Text>
-          <TouchableOpacity>
-            <Text className="text-[#00ccbb]">Chọn</Text>
-          </TouchableOpacity>
-        </View> */}
 
         <ScrollView className="divide-y divide-gray-200">
           {Object.entries(groupItemsBasket).map(([key, items]) => (
