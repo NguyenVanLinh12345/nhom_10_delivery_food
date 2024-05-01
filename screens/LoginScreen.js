@@ -8,30 +8,41 @@ import { ArrowLeftIcon, AtSymbolIcon, LockClosedIcon } from "react-native-heroic
 
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
+import { useState } from "react";
+import { restaurantModel } from "../models/restaurant.model";
+import { customerModel } from "../models/customer.model";
+import { useDispatch } from "react-redux";
+import { setUser } from "../slices/userSlice";
 
 // Trong React Navigation, các component được chuyển đến trong navigation stack sẽ 
 // tự động nhận được hai prop quan trọng là route và navigation
 function LoginScreen({ route, navigation }) {
+    const dispatch = useDispatch();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        const restaurant = restaurantModel.findByEmailAndPassword(email, password);
+        const customer = customerModel.findByEmailAndPassword(email, password);
+
+        if (restaurant || customer) {
+            dispatch(setUser(restaurant || customer));
+
+            if (customer) {
+                navigation.navigate('Home');
+            }
+    
+            if (restaurant) {
+                navigation.navigate('RestaurantDashboard');
+            }
+        }
+    }
 
     return (
         <>
-            <View className="relative">
-                <TouchableOpacity
-                    className="absolute top-14 left-5 p-2 bg-white rounded-full"
-                    onPress={() => navigation.goBack(null)}
-                >
-                    <ArrowLeftIcon size={20} color="#00ccbb" />
-                </TouchableOpacity>
-            </View>
-
             <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
                 <View style={{ paddingHorizontal: 25 }}>
                     <View style={{ alignItems: 'center' }}>
-                        {/* <LoginSVG
-                            height={300}
-                            width={300}
-                            style={{ transform: [{ rotate: '-5deg' }] }}
-                        /> */}
                     </View>
 
                     <Text
@@ -43,11 +54,13 @@ function LoginScreen({ route, navigation }) {
                             marginTop: 36,
                             marginBottom: 24
                         }}>
-                        Login
+                        Đăng nhập
                     </Text>
 
                     <InputField
-                        label={'Email ID'}
+                        label={'Tài khoản'}
+                        vale={email}
+                        onChangeText={setEmail}
                         icon={
                             <AtSymbolIcon
                                 name="alternate-email"
@@ -60,7 +73,9 @@ function LoginScreen({ route, navigation }) {
                     />
 
                     <InputField
-                        label={'Password'}
+                        label={'Mật khẩu'}
+                        value={password}
+                        onChangeText={setPassword}
                         icon={
                             <LockClosedIcon
                                 name="ios-lock-closed-outline"
@@ -70,14 +85,13 @@ function LoginScreen({ route, navigation }) {
                             />
                         }
                         inputType="password"
-                        fieldButtonLabel={"Forgot?"}
-                        fieldButtonFunction={() => { }}
+                        fieldButtonLabel={"Quên mật khẩu?"}
                     />
 
-                    <CustomButton label={"Login"} onPress={() => { }} />
+                    <CustomButton label={"Login"} onPress={handleLogin} />
 
                     <Text style={{ textAlign: 'center', color: '#666', marginBottom: 30 }}>
-                        Or, login with ...
+                        Hoặc, đăng nhập với ...
                     </Text>
 
                     <View
@@ -96,7 +110,7 @@ function LoginScreen({ route, navigation }) {
                                 paddingHorizontal: 30,
                                 paddingVertical: 10,
                             }}>
-                            <Text>G</Text>
+                            <Text>Google</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -108,7 +122,7 @@ function LoginScreen({ route, navigation }) {
                                 paddingHorizontal: 30,
                                 paddingVertical: 10,
                             }}>
-                            <Text>F</Text>
+                            <Text>Facebook</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -120,7 +134,7 @@ function LoginScreen({ route, navigation }) {
                                 paddingHorizontal: 30,
                                 paddingVertical: 10,
                             }}>
-                            <Text>T</Text>
+                            <Text>X</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -130,12 +144,12 @@ function LoginScreen({ route, navigation }) {
                             justifyContent: 'center',
                             marginBottom: 16,
                         }}>
-                        <Text>New to the app?</Text>
+                        <Text>Bạn chưa có tài khoản?</Text>
                         <TouchableOpacity
                             className="ml-1"
                             onPress={() => navigation.navigate('Register')}
                         >
-                            <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Register</Text>
+                            <Text style={{ color: '#00ccbb', fontWeight: '700' }}>Đăng ký</Text>
                         </TouchableOpacity>
                     </View>
                     <View
@@ -147,7 +161,7 @@ function LoginScreen({ route, navigation }) {
                         <TouchableOpacity
                             onPress={() => navigation.navigate('RestaurantRegister')}
                         >
-                            <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Tạo tài khoản bán hàng</Text>
+                            <Text style={{ color: '#00ccbb', fontWeight: '700' }}>Tạo tài khoản bán hàng</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
