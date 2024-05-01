@@ -10,7 +10,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { urlFor } from "../sanity";
-import Currency from "react-currency-formatter";
+// import Currency from "react-currency-formatter";
 
 const BasketScreen = ({ navigation }) => {
   const restaurant = useSelector(selectRestaurant);
@@ -82,10 +82,12 @@ const BasketScreen = ({ navigation }) => {
               <Text className="flex-1">{items[0]?.name}</Text>
 
               <Text className="text-gray-600 text-xs line-through">
-                <Currency quantity={items[0]?.price} currency="VND" z />
+                {/* <Currency quantity={items[0]?.price} currency="VND" z /> */}
+                { items[0]?.price } vnd
               </Text>
               <Text className="text-gray-600 text-xs">
-                <Currency quantity={items[0]?.price - 100} currency="VND" z />
+                {/* <Currency quantity={items[0]?.price - 100} currency="VND" z /> */}
+                { items[0]?.price - 100 } vnd
               </Text>
 
               <TouchableOpacity>
@@ -104,31 +106,36 @@ const BasketScreen = ({ navigation }) => {
           <View className="flex-row justify-between">
             <Text className="text-gray-400">Tổng phụ</Text>
             <Text className="text-gray-400">
-              <Currency quantity={basketTotal} currency="VND" />
+              {/* <Currency quantity={basketTotal} currency="VND" /> */}
+              { basketTotal } vnd
             </Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-400">Phí giao hàng</Text>
             <Text className="text-gray-400">
-              <Currency quantity={13.3} currency="VND" />
+              {/* <Currency quantity={13.3} currency="VND" /> */}
+              13.3 vnd
             </Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-400">Giảm giá từ khuyến mại</Text>
             <Text className="text-gray-400">
-              <Currency quantity={-15} currency="VND" />
+              {/* <Currency quantity={-15} currency="VND" /> */}
+              -15 vnd
             </Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-400">Giảm giá từ tích điểm</Text>
             <Text className="text-gray-400">
-              <Currency quantity={-15} currency="VND" />
+              {/* <Currency quantity={-15} currency="VND" /> */}
+              -15 vnd
             </Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-400 font-bold">Tổng</Text>
             <Text className=" text-[#1f1f20] font-extrabold">
-              <Currency quantity={basketTotal + 13.3} currency="VND" />
+              {/* <Currency quantity={basketTotal + 13.3} currency="VND" /> */}
+              { basketTotal + 13.3 } vnd
             </Text>
           </View>
 

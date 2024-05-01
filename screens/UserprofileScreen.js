@@ -2,7 +2,15 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftIcon, BuildingStorefrontIcon, Cog6ToothIcon, CurrencyDollarIcon, GifIcon, GiftIcon, MapPinIcon, PowerIcon, QuestionMarkCircleIcon } from "react-native-heroicons/solid";
 import CustomButton from '../components/CustomButton';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../slices/userSlice';
+
 const UserprofileScreen = ({ route, navigation }) => {
+    const dispatch = useDispatch();
+    const handleLogout = () => {
+        dispatch(setUser(null));
+        navigation.navigate('Login');
+    }
     return (
         <>
             <SafeAreaView className="bg-white ">
@@ -56,7 +64,7 @@ const UserprofileScreen = ({ route, navigation }) => {
                             <Text className='text-black-700  font-light text-xl'>Trợ giúp</Text>
 
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { }}
+                        <TouchableOpacity
                             style={{
                                 backgroundColor: '#00CCBB',
 
@@ -66,7 +74,8 @@ const UserprofileScreen = ({ route, navigation }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderRadius: 10,
-                            }}>
+                            }}
+                            onPress={handleLogout}>
                             <PowerIcon size={30} color="gray" />
                             <Text className='text-white text-xl '>Đăng xuất</Text>
                         </TouchableOpacity>

@@ -1,25 +1,79 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, Modal, Button } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Modal } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { urlFor } from "../sanity";
 import {
-  ArrowLeftIcon,
-  ChevronRightIcon,
   LinkIcon,
   MapPinIcon,
-  QuestionMarkCircleIcon,
   ShareIcon,
   StarIcon,
   TagIcon,
   XMarkIcon,
+  Bars3Icon
 } from "react-native-heroicons/solid";
-import DishRow from "../components/DishRow";
-import BasketContainer from "../components/BasketContainer";
-import { useDispatch } from "react-redux";
-import { setRestaurant } from "../slices/restaurantSlice";
-const RestaurantScreen = ({ route, navigation }) => {
-  const {
-    params: { id, imgUrl, title, rating, genre, address, short_description, dishes, long, lat },
-  } = route;
+import { useSelector } from "react-redux";
+import { selectUser } from "../../slices/userSlice";
+import { useNavigation } from "@react-navigation/native";
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import useWindowDimensions from "react-native/Libraries/Utilities/useWindowDimensions";
+
+const DISHES_TAB = 'DISHES_TAB';
+const ORDERS_TAB = 'ORDERS_TAB';
+const PROMOTIONS_TAB = 'PROMOTIONS_TAB';
+
+const DishesTab = () => (
+  <View style={{ flex: 1, backgroundColor: '#ff4081' }} />
+);
+
+const OrdersTab = () => (
+  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
+);
+
+const PromotionsTab = () => (
+  <View style={{ flex: 1, backgroundColor: '#333333' }} />
+);
+
+const renderScene = SceneMap({
+  [DISHES_TAB]: DishesTab,
+  [ORDERS_TAB]: OrdersTab,
+  [PROMOTIONS_TAB]: PromotionsTab,
+});
+
+const RestaurantDashboardScreen = () => {
+  const navigation = useNavigation();
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: DISHES_TAB, title: 'Món ăn' },
+    { key: ORDERS_TAB, title: 'Đơn hàng' },
+    { key: PROMOTIONS_TAB, title: 'Mã giảm giá' },
+  ]);
+  const currentUser = useSelector(selectUser);
+  const [restaurant, setRestaurant] = useState({});
+  const [isModal, setIsModal] = useState(false);
+
+  let {
+    id, imgUrl, title, rating, genre, address, short_description, long, lat
+  } = restaurant || {};
+
+  useEffect(() => {
+    if (!currentUser || !currentUser.user.id) {
+      navigation.navigate("Login");
+    }
+    setRestaurant(currentUser.user);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (restaurant && restaurant.id) {
+      id = restaurant.id;
+      imgUrl = restaurant.imgUrl;
+      title = restaurant.title;
+      rating = restaurant.rating;
+      genre = restaurant.genre;
+      address = restaurant.address;
+      short_description = restaurant.short_description;
+      long = restaurant.long;
+      lat = restaurant.lat;
+    }
+  }, [restaurant]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,32 +81,27 @@ const RestaurantScreen = ({ route, navigation }) => {
     });
   }, []);
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      setRestaurant({
-        id,
-        imgUrl,
-        title,
-        rating,
-        genre,
-        address,
-        short_description,
-        dishes,
-        long,
-        lat,
-      }),
-    );
-  }, [dispatch]);
-  const [isModal, setIsModal] = useState(false);
+  const handleChangeTab = (event) => {
+    const newIndex = routes.findIndex((item) => item.key === event.route.key);
+    setIndex(newIndex);
+  }
+
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: '#00ccbb' }}
+      style={{ backgroundColor: 'white', border: '1px solid #333' }}
+      labelStyle={{ color: 'black' }}
+      onTabPress={handleChangeTab}
+    />
+  );
 
   return (
     <>
-      <BasketContainer />
-      <ScrollView>
+      {/* <ScrollView> */}
         <View className="relative">
-          <Image source={{ uri: urlFor(imgUrl).url() }} className="w-full h-56 bg-gray-300 p-4" />
-          <View className="absolute right-4 p-2 top-14 bg-white rounded-full">
+          <Image source={{ uri: imgUrl }} className="w-full h-56 bg-gray-300 p-4" />
+          {/* <View className="absolute right-4 p-2 top-14 bg-white rounded-full">
             <TouchableOpacity
               className=''
               onPress={() => { setIsModal(true) }}>
@@ -60,14 +109,14 @@ const RestaurantScreen = ({ route, navigation }) => {
                 size={20} color="#00ccbb"
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
 
 
           <TouchableOpacity
             className="absolute top-14 left-5 p-2 bg-white rounded-full"
             onPress={() => navigation.goBack(null)}
           >
-            <ArrowLeftIcon size={20} color="#00ccbb" />
+            <Bars3Icon size={20} color="#00ccbb" />
           </TouchableOpacity>
         </View>
 
@@ -90,29 +139,19 @@ const RestaurantScreen = ({ route, navigation }) => {
             </View>
             <Text className="text-gray-500 mt-2 pb-4">{short_description}</Text>
           </View>
-          <TouchableOpacity className="flex-row items-center space-x-2 p-4 border-y-2 border-gray-100 ">
-            <QuestionMarkCircleIcon color="gray" opacity={0.5} size={20} />
-            <Text className="pl-2 flex-1 text-sm font-bold">Có bị dị ứng thực phẩm không?</Text>
-            <ChevronRightIcon color="#00ccbb" />
-          </TouchableOpacity>
         </View>
-        <View className="pb-36">
-          <Text className="px-4 pt-6 mb-3 font-bold text-xl">
-            Thực đơn
-            {/* {DishRows} */}
-          </Text>
-          {dishes.map((dish) => (
-            <DishRow
-              key={dish._id}
-              id={dish._id}
-              name={dish.name}
-              description={dish.short_description}
-              price={dish.price}
-              image={dish.image}
-            />
-          ))}
-        </View>
-      </ScrollView>
+      {/* </ScrollView> */}
+      <TabView
+        index={index}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        sceneContainerStyle={{ backgroundColor: 'white' }}
+        pagerStyle={{ backgroundColor: 'white' }}
+        style={{ backgroundColor: 'white' }}
+      />
       <Modal
         visible={isModal}
         onRequestClose={() => setIsModal(false)}
@@ -197,4 +236,4 @@ const RestaurantScreen = ({ route, navigation }) => {
   );
 };
 
-export default RestaurantScreen;
+export default RestaurantDashboardScreen;

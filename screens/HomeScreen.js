@@ -13,10 +13,13 @@ import {
 import Categories from "../components/Categories";
 import FeaturedRow from "../components/FeaturedRow";
 import SanityClient from "../sanity";
+import { selectUser } from "../slices/userSlice";
+import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   // state and hooks
   const navigation = useNavigation();
+  const customer = useSelector(selectUser);
   const [featuredCategories, setFeaturedCategories] = useState([]);
 
   // side effects
@@ -25,6 +28,12 @@ const HomeScreen = () => {
       headerShown: false,
     });
   }, []);
+
+  useEffect(() => {
+    if (!customer || !customer.id) {
+      navigation.navigate("Login");
+    }
+  }, [customer]);
 
   useEffect(() => {
     SanityClient.fetch(
@@ -61,9 +70,9 @@ const HomeScreen = () => {
             />
           </TouchableOpacity>
           <View className="flex-1">
-            <Text className="font-bold text-gray-400 text-xs">Deliver Now</Text>
-            <Text className="font-bold text-xl  ">
-              Current location <ChevronDownIcon size={20} color="#00CCBB" />
+            <Text className="font-bold text-gray-400 text-xs">Trần Thanh Thế</Text>
+            <Text className="font-bold text-base">
+              62 Đa sĩ, Kiến Hưng, Hà Đông <ChevronDownIcon size={20} color="#00CCBB" />
             </Text>
           </View>
 
@@ -81,7 +90,7 @@ const HomeScreen = () => {
         <View className="flex-row mx-4 items-center space-x-2 pb-2">
           <View className="flex-row space-x-2 flex-1 bg-gray-200 p-3 rounded-md">
             <MagnifyingGlassIcon color="gray" />
-            <TextInput placeholder="Restaurants and cuisines" keyboardType="default" />
+            <TextInput placeholder="Nhà hàng, món ăn,..." keyboardType="default" />
           </View>
           <AdjustmentsVerticalIcon color="#00CCBB" />
         </View>
