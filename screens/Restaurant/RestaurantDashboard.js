@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, Modal } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Modal, StyleSheet, Button } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   LinkIcon,
@@ -86,6 +86,22 @@ const RestaurantDashboardScreen = () => {
     setIndex(newIndex);
   }
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleClick = () => {
+    setModalVisible(!modalVisible);
+  }
+  const handleAddDish = () => {
+    // Handle add dish here
+    navigation.navigate('AddDishes');
+
+  };
+
+  const handleAddVoucher = () => {
+    // Handle add voucher here
+    navigation.navigate('AddVoucher');
+
+  };
+
   const renderTabBar = props => (
     <TabBar
       {...props}
@@ -96,12 +112,14 @@ const RestaurantDashboardScreen = () => {
     />
   );
 
+
+
   return (
     <>
       {/* <ScrollView> */}
-        <View className="relative">
-          <Image source={{ uri: imgUrl }} className="w-full h-56 bg-gray-300 p-4" />
-          {/* <View className="absolute right-4 p-2 top-14 bg-white rounded-full">
+      <View className="relative">
+        <Image source={{ uri: imgUrl }} className="w-full h-56 bg-gray-300 p-4" />
+        {/* <View className="absolute right-4 p-2 top-14 bg-white rounded-full">
             <TouchableOpacity
               className=''
               onPress={() => { setIsModal(true) }}>
@@ -112,34 +130,35 @@ const RestaurantDashboardScreen = () => {
           </View> */}
 
 
-          <TouchableOpacity
-            className="absolute top-14 left-5 p-2 bg-white rounded-full"
-            onPress={() => navigation.goBack(null)}
-          >
-            <Bars3Icon size={20} color="#00ccbb" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          className="absolute top-14 left-5 p-2 bg-white rounded-full"
+          onPress={handleClick}
+        >
+          <Bars3Icon size={20} color="#00ccbb" />
+        </TouchableOpacity>
 
-        <View className="bg-white">
-          <View className="px-4 pt-4">
-            <Text className="text-3xl font-bold ">{title}</Text>
-            <View className="flex-row space-x-2 my-1">
-              <View className="flex-row items-center space-x-1">
-                <StarIcon color="green" opacity={0.5} size={22} />
-                <Text className="text-xs text-gray-500">
-                  <Text className="text-green-500">
-                    {rating} . {genre}
-                  </Text>
+      </View>
+
+      <View className="bg-white">
+        <View className="px-4 pt-4">
+          <Text className="text-3xl font-bold ">{title}</Text>
+          <View className="flex-row space-x-2 my-1">
+            <View className="flex-row items-center space-x-1">
+              <StarIcon color="green" opacity={0.5} size={22} />
+              <Text className="text-xs text-gray-500">
+                <Text className="text-green-500">
+                  {rating} . {genre}
                 </Text>
-              </View>
-              <View className="flex-row items-center space-x-1">
-                <MapPinIcon color="gray" opacity={0.5} size={22} />
-                <Text className="text-xs text-gray-500">Gần . {address}</Text>
-              </View>
+              </Text>
             </View>
-            <Text className="text-gray-500 mt-2 pb-4">{short_description}</Text>
+            <View className="flex-row items-center space-x-1">
+              <MapPinIcon color="gray" opacity={0.5} size={22} />
+              <Text className="text-xs text-gray-500">Gần . {address}</Text>
+            </View>
           </View>
+          <Text className="text-gray-500 mt-2 pb-4">{short_description}</Text>
         </View>
+      </View>
       {/* </ScrollView> */}
       <TabView
         index={index}
@@ -152,88 +171,78 @@ const RestaurantDashboardScreen = () => {
         pagerStyle={{ backgroundColor: 'white' }}
         style={{ backgroundColor: 'white' }}
       />
-      <Modal
-        visible={isModal}
-        onRequestClose={() => setIsModal(false)}
-        animationType='slide'
-        transparent={true}>
-        <View
-          style={{
-            flex: 1,
-            marginBottom: 0,
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)'
-          }}
+      <View >
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleClick
+          }
         >
 
-          <View
-            style={{
-              backgroundColor: 'white',
-              justifyContent: 'flex-end',
-              padding: 22,
-              width: '100%',
-              height: 300,
-              borderRadius: 10,
-            }}
-          >
-            <View className="absolute right-4 p-2 top-2 bg-white rounded-full">
-              <TouchableOpacity
-                onPress={() => { setIsModal(false) }}>
-                <XMarkIcon
-                  size={25} color="#00ccbb"
-                />
-              </TouchableOpacity>
-            </View>
-            <View className='absolute p-3 top-2 '>
-              <Text className='font-bold text-lg '>Chia sẻ với bạn bè và gia đình</Text>
-            </View>
-            <View className='absolute top-20 ' style={{ flex: 1, height: 1, width: '100%', backgroundColor: 'black' }} />
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 30,
-              }}>
+          <View style={styles.centeredView}>
 
-              <TouchableOpacity
-                onPress={() => { }}
-                style={{ alignItems: 'center' }}
-              >
-                <Image
-                  source={{
-                    uri: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png',
-                  }}
-                  style={{ width: 30, height: 30 }} />
-                <Text>facebook</Text>
+            <View style={styles.modalView}>
+              <TouchableOpacity className="absolute right-0 top-1 bg-white rounded-full" onPress={handleClick}>
+                <XMarkIcon size={30} color="#000000" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddDish}>
+                <Text style={styles.modalButtonText}>Thêm món ăn mới</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddVoucher}>
+                <Text style={styles.modalButtonText}>Thêm mã giảm giá</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => { }}
-                style={{ alignItems: 'center' }}
-              >
-                <TagIcon size={30} color='black' />
-                <Text>sao chép thông tin</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => { }}
-                style={{
-
-                }}
-              >
-                <View style={{ alignItems: 'center' }}>
-                  <LinkIcon size={30} color='black' />
-                  <Text >sao chép đường dẫn</Text>
-                </View>
-              </TouchableOpacity>
             </View>
           </View>
-        </View>
-
-      </Modal>
+        </Modal>
+      </View>
     </>
   );
 };
-
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: "#00ffff",
+    borderRadius: 5,
+    padding: 15,
+    width: "100%",
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  modalButtonText: {
+    color: "#000000",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  closeButton: {
+    backgroundColor: "#dc3545", // Màu nút đóng
+  },
+});
 export default RestaurantDashboardScreen;

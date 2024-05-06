@@ -20,18 +20,18 @@ function LoginScreen({ route, navigation }) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    console.log(email, password)
     const handleLogin = () => {
         const restaurant = restaurantModel.findByEmailAndPassword(email, password);
         const customer = customerModel.findByEmailAndPassword(email, password);
-
+        console.log(email, password)
         if (restaurant || customer) {
             dispatch(setUser(restaurant || customer));
 
             if (customer) {
                 navigation.navigate('Home');
             }
-    
+
             if (restaurant) {
                 navigation.navigate('RestaurantDashboard');
             }
@@ -59,8 +59,8 @@ function LoginScreen({ route, navigation }) {
 
                     <InputField
                         label={'Tài khoản'}
-                        vale={email}
-                        onChangeText={setEmail}
+                        value={email}
+                        onChange={setEmail}
                         icon={
                             <AtSymbolIcon
                                 name="alternate-email"
@@ -75,7 +75,7 @@ function LoginScreen({ route, navigation }) {
                     <InputField
                         label={'Mật khẩu'}
                         value={password}
-                        onChangeText={setPassword}
+                        onChange={setPassword}
                         icon={
                             <LockClosedIcon
                                 name="ios-lock-closed-outline"
