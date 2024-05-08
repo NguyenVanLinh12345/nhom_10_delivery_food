@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, Modal } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Modal, StyleSheet, Button } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   LinkIcon,
@@ -67,6 +67,22 @@ const RestaurantDashboardScreen = () => {
     { key: LICH_SU, title: 'Đang giao' },
     { key: DA_HUY, title: 'Hoàn thành' },
   ]);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleClick = () => {
+    setModalVisible(!modalVisible);
+  }
+  const handleAddDish = () => {
+    // Handle add dish here
+    navigation.navigate('AddDishes');
+
+  };
+
+  const handleAddVoucher = () => {
+    // Handle add voucher here
+    navigation.navigate('AddVoucher');
+
+  };
 
   const renderTabBar = props => (
     <TabBar
@@ -143,7 +159,7 @@ const RestaurantDashboardScreen = () => {
           <Text classname="text-2xl font-bold">Dashboard >> Đơn hàng</Text>
         </View>
       </View>
-
+      
       <TabView
         index={index}
         navigationState={{ index, routes }}
@@ -155,8 +171,78 @@ const RestaurantDashboardScreen = () => {
         pagerStyle={{ backgroundColor: 'white' }}
         style={{ backgroundColor: 'white' }}
       />
+
+      <View >
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleClick
+          }
+        >
+          <View style={styles.centeredView}>
+
+            <View style={styles.modalView}>
+              <TouchableOpacity className="absolute right-0 top-1 bg-white rounded-full" onPress={handleClick}>
+                <XMarkIcon size={30} color="#000000" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddDish}>
+                <Text style={styles.modalButtonText}>Thêm món ăn mới</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddVoucher}>
+                <Text style={styles.modalButtonText}>Thêm mã giảm giá</Text>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+        </Modal>
+      </View>
     </>
   );
 };
-
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: "#00ffff",
+    borderRadius: 5,
+    padding: 15,
+    width: "100%",
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  modalButtonText: {
+    color: "#000000",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  closeButton: {
+    backgroundColor: "#dc3545", // Màu nút đóng
+  },
+});
 export default RestaurantDashboardScreen;

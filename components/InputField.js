@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, TextInput} from 'react-native';
-
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 export default function InputField({
   label,
   icon,
@@ -9,8 +8,15 @@ export default function InputField({
   fieldButtonLabel,
   fieldButtonFunction,
   onChangeText,
-  value
+  value,
+  onChange,
+  handleBlur,
 }) {
+
+  const change = () => {
+    onChangeText && onChangeText();
+    onChange && onChange();
+  }
   return (
     <View
       style={{
@@ -25,21 +31,22 @@ export default function InputField({
         <TextInput
           placeholder={label}
           keyboardType={keyboardType}
-          style={{flex: 1, paddingVertical: 0}}
+          style={{ flex: 1, paddingVertical: 0 }}
           secureTextEntry={true}
-          onChangeText={onChangeText}
+          onChangeText={change}
         />
       ) : (
         <TextInput
           value={value}
           placeholder={label}
           keyboardType={keyboardType}
-          style={{flex: 1, paddingVertical: 0}}
-          onChangeText={onChangeText}
+          style={{ flex: 1, paddingVertical: 0 }}
+          onChangeText={change}
+          onBlur={handleBlur}
         />
       )}
       <TouchableOpacity onPress={fieldButtonFunction}>
-        <Text style={{color: '#00ccbb', fontWeight: '700'}}>{fieldButtonLabel}</Text>
+        <Text style={{ color: '#AD40AF', fontWeight: '700' }}>{fieldButtonLabel}</Text>
       </TouchableOpacity>
     </View>
   );

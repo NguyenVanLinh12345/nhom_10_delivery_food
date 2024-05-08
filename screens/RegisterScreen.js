@@ -48,7 +48,7 @@ function RegisterScreen({ navigation }) {
             }}>
             Register
           </Text>
-          
+
           {/* <View
             style={{
               flexDirection: 'row',

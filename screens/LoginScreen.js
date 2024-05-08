@@ -69,8 +69,8 @@ function LoginScreen({ route, navigation }) {
 
                     <InputField
                         label={'Tài khoản'}
-                        vale={email}
-                        onChangeText={setEmail}
+                        value={email}
+                        onChange={setEmail}
                         icon={
                             <AtSymbolIcon
                                 name="alternate-email"
@@ -85,7 +85,7 @@ function LoginScreen({ route, navigation }) {
                     <InputField
                         label={'Mật khẩu'}
                         value={password}
-                        onChangeText={setPassword}
+                        onChange={setPassword}
                         icon={
                             <LockClosedIcon
                                 name="ios-lock-closed-outline"
