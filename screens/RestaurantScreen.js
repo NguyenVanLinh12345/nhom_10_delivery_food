@@ -101,7 +101,7 @@ const RestaurantScreen = ({ route, navigation }) => {
             Thực đơn
             {/* {DishRows} */}
           </Text>
-          {dishes.map((dish) => (
+          {(dishes || []).map((dish) => (
             <DishRow
               key={dish._id}
               id={dish._id}

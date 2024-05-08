@@ -2,8 +2,79 @@ import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import { ArrowLeftIcon, AtSymbolIcon, IdentificationIcon, LockClosedIcon, MapPinIcon, PhoneIcon, UserIcon } from "react-native-heroicons/outline";
 import CustomButton from "../../components/CustomButton";
 import InputField from "../../components/InputField";
+import { useEffect, useState } from "react";
+import { baseUrl } from "../../constants";
+import { setUser } from "../../slices/userSlice";
+import { useDispatch } from "react-redux";
 
-const RestaurantRegisterScreen = ({ navigation }) => {
+const RestaurantRegisterScreen = ({ navigation, route }) => {
+  const isEdit = route.params?.isEdit;
+  const restaurant = route.params?.restaurant;
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [restaurantName, setRestaurantName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    if (isEdit && restaurant) {
+      setEmail(restaurant.email);
+      setPassword(restaurant.password);
+      setRestaurantName(restaurant.title);
+      setPhoneNumber(restaurant.phone_number);
+      setAddress(restaurant.address);
+      setDescription(restaurant.short_description);
+    }
+  }, [restaurant, isEdit]);
+
+  const handleSubmit = () => {
+    if (isEdit) {
+      // Handle edit restaurant
+      fetch(baseUrl + '/restaurants/' + restaurant._id, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email, 
+          password, 
+          title: restaurantName, 
+          phone_number: phoneNumber, 
+          address, 
+          short_description: description,
+        })
+      }).then(response => response.json())
+        .then(data => {
+          dispatch(setUser({
+            ...data,
+            isRestaurant: true,
+            lat: 0,
+            long: 0,
+        }));
+          navigation.navigate("RestaurantDashboard")
+        })
+    } else {
+      fetch(baseUrl + '/restaurants', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          title: restaurantName, 
+          phone_number: phoneNumber, 
+          address, 
+          short_description: description,
+        })
+      }).then(response => response.json())
+        .then(data => {
+          navigation.navigate("Login")
+        })
+    }
+  }
   return (
     <>
       <View className="relative">
@@ -25,7 +96,7 @@ const RestaurantRegisterScreen = ({ navigation }) => {
               marginTop: 36,
               marginBottom: 24
             }}>
-            Đăng ký nhà hàng
+              {isEdit ? "Sửa thông tin nhà hàng" : "Đăng ký nhà hàng"}
           </Text>
 
           <InputField
@@ -38,7 +109,9 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
+            value={email}
             keyboardType="email-address"
+            onChangeText={setEmail}
           />
 
           <InputField
@@ -51,8 +124,8 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
-            inputType="password"
-            fieldButtonFunction={() => { }}
+            value={password}
+            onChangeText={setPassword}
           />
 
           <InputField
@@ -65,7 +138,8 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
-            fieldButtonFunction={() => { }}
+            value={restaurantName}
+            onChangeText={setRestaurantName}
           />
 
           <InputField
@@ -78,7 +152,8 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
-            fieldButtonFunction={() => { }}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
           />
 
           <InputField
@@ -91,7 +166,8 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
-            fieldButtonFunction={() => { }}
+            value={address}
+            onChangeText={setAddress}
           />
 
           <InputField
@@ -104,25 +180,30 @@ const RestaurantRegisterScreen = ({ navigation }) => {
                 style={{ marginRight: 5 }}
               />
             }
-            fieldButtonFunction={() => { }}
+            value={description}
+            onChangeText={setDescription}
           />
 
-          <CustomButton label={"Đăng ký nhà hàng"} onPress={() => { navigation.navigate("Home")}} />
+          <CustomButton label={isEdit ? "Lưu thay đổi" : "Đăng ký nhà hàng"} onPress={handleSubmit} />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginBottom: 16,
-            }}>
-            <Text>Bạn đã có tài khoản?</Text>
-            <TouchableOpacity
-              className="ml-1"
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={{ color: '#AD40AF', fontWeight: '700' }}>Đăng nhập</Text>
-            </TouchableOpacity>
-          </View>
+          {
+            !isEdit && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginBottom: 16,
+                }}>
+                <Text>Bạn đã có tài khoản?</Text>
+                <TouchableOpacity
+                  className="ml-1"
+                  onPress={() => navigation.navigate('Login')}
+                >
+                  <Text style={{ color: '#00ccbb', fontWeight: '700' }}>Đăng nhập</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
         </View>
       </SafeAreaView>
     </>

@@ -13,6 +13,7 @@ import { restaurantModel } from "../models/restaurant.model";
 import { customerModel } from "../models/customer.model";
 import { useDispatch } from "react-redux";
 import { setUser } from "../slices/userSlice";
+import { baseUrl } from "../constants";
 
 // Trong React Navigation, các component được chuyển đến trong navigation stack sẽ 
 // tự động nhận được hai prop quan trọng là route và navigation
@@ -21,21 +22,30 @@ function LoginScreen({ route, navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        const restaurant = restaurantModel.findByEmailAndPassword(email, password);
+    const handleLogin = async () => {
         const customer = customerModel.findByEmailAndPassword(email, password);
-
-        if (restaurant || customer) {
-            dispatch(setUser(restaurant || customer));
-
-            if (customer) {
-                navigation.navigate('Home');
-            }
-    
-            if (restaurant) {
-                navigation.navigate('RestaurantDashboard');
-            }
-        }
+        fetch(baseUrl + "/restaurants/get-all")
+            .then(response => response.json())
+            .then(data => {
+                const restaurant = data.find(restaurant => restaurant.email === email && restaurant.password === password);
+        
+                if (restaurant || customer) {
+                    if (customer) {
+                        dispatch(setUser(customer));
+                        navigation.navigate('Home');
+                    }
+            
+                    if (restaurant) {
+                        dispatch(setUser({
+                            ...restaurant,
+                            isRestaurant: true,
+                            lat: 0,
+                            long: 0,
+                        }));
+                        navigation.navigate('RestaurantDashboard');
+                    }
+                }
+            })
     }
 
     return (

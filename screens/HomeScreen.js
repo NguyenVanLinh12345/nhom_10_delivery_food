@@ -15,6 +15,7 @@ import FeaturedRow from "../components/FeaturedRow";
 import SanityClient from "../sanity";
 import { selectUser } from "../slices/userSlice";
 import { useSelector } from "react-redux";
+import { featuredCategoriesData } from "../constants";
 
 const HomeScreen = () => {
   // state and hooks
@@ -30,29 +31,18 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (!customer || !customer.id) {
+    if (!customer || (!customer?.user?.id && !customer?.user?._id)) {
+      console.log("Redirecting to login screen", customer);
       navigation.navigate("Login");
+    }
+
+    return () => {
+      console.log("Home screen unmounted");
     }
   }, [customer]);
 
   useEffect(() => {
-    SanityClient.fetch(
-      `
-      *[_type == "featured"]{
-        ...,
-        restaurants[]->{
-          ...,
-        dishes[]->
-          
-        }
-     }
-    `,
-    )
-      .then((data) => setFeaturedCategories(data))
-      .catch((err) => {
-        console.log("error");
-        console.log(err);
-      });
+    setFeaturedCategories(featuredCategoriesData)
   }, []);
 
 

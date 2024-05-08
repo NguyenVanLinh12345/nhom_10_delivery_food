@@ -3,35 +3,16 @@ import React, { useEffect, useState } from "react";
 import { ArrowRightIcon } from "react-native-heroicons/outline";
 import RestaurantCard from "./RestaurantCard";
 import SanityClient from "../sanity";
+import { restaurantsData } from "../constants";
 
 // Cái này là danh sách nhà hàng hiển thị theo chiều ngang
 function FeaturedRow({ title, description, id }) {
   const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
-    SanityClient.fetch(
-      `
-      
-      *[_type == "featured" && _id == $id]{
-        ...,
-        restaurants[]->{
-          ...,
-        dishes[]->,
-          type-> {
-            name
-          }
-          
-        }
-     }[0]
-
-
-      `,
-      { id },
-    ).then((data) => setRestaurants(data?.restaurants));
-  }, [id]);
-
-
-
+    setRestaurants(restaurantsData)
+    console.log("FeaturedRow", restaurantsData);
+  }, []);
 
   return (
     <View>

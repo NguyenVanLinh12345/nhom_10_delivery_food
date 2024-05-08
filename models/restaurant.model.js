@@ -33,6 +33,7 @@ const data = [
     rating: 5,
     short_description: "Tầng 9 - Tòa nhà 3D Center",
     title: "Phở lý quốc sư",
+    isRestaurant: true,
   },
   {
     id: 2,
@@ -42,5 +43,6 @@ const data = [
     password: "123456",
     bacground:
       "https://images.foody.vn/res/g1/8887/prof/s576x330/foody-mobile-0drisngl-jpg-612-635781077873801273.jpg",
+    isRestaurant: true,
   }
 ];

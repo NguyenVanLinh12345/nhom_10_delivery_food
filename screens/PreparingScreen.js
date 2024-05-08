@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const PreparingScreen = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate("OrderDetail");
+      navigation.navigate({ name: "OrderDetail", params: { isConfirmMode: false } });
     }, 2000);
   }, [navigation]);
 

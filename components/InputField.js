@@ -8,7 +8,8 @@ export default function InputField({
   keyboardType,
   fieldButtonLabel,
   fieldButtonFunction,
-  onChangeText
+  onChangeText,
+  value
 }) {
   return (
     <View
@@ -30,6 +31,7 @@ export default function InputField({
         />
       ) : (
         <TextInput
+          value={value}
           placeholder={label}
           keyboardType={keyboardType}
           style={{flex: 1, paddingVertical: 0}}
