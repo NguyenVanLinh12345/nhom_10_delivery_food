@@ -1,88 +1,14 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useEffect } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Modal, Pressable } from "react-native";
-import { ArrowLeftIcon, CheckIcon, ChevronLeftIcon, ShoppingCartIcon, TruckIcon, XCircleIcon, XMarkIcon } from "react-native-heroicons/outline";/* eslint-disable react-native/no-inline-styles */
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { ArrowLeftIcon, CheckIcon, ShoppingCartIcon, TruckIcon } from "react-native-heroicons/outline";/* eslint-disable react-native/no-inline-styles */
 import StepIndicator from 'react-native-step-indicator';
-import { back } from "react-native/Libraries/Animated/Easing";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../slices/userSlice";
-import InputField from "../../components/InputField";
-
-const discountCodes = [
-  {
-    id: 1,
-    code: "Giảm 10k cho đơn hàng trên 100k",
-    discount: 10000,
-    condition: 100000,
-  },
-  {
-    id: 2,
-    code: "Giảm 20k cho đơn hàng trên 200k",
-    discount: 20000,
-    condition: 200000,
-  },
-  {
-    id: 3,
-    code: "Giảm 30k cho đơn hàng trên 300k",
-    discount: 30000,
-    condition: 300000,
-  },
-  {
-    id: 4,
-    code: "Giảm 40k cho đơn hàng trên 400k",
-    discount: 40000,
-    condition: 400000,
-  }
-]
-
-const address = [
-  {
-    id: 1,
-    address: "62 Đa sĩ, Kiến Hưng, Hà Đông",
-    phone_number: "0123456789",
-    customer_name: "Trần Thanh Thế",
-  },
-  {
-    id: 2,
-    address: "L10 Tầng 10 - Tòa Vincom Center - Quận 1",
-    phone_number: "0123456789",
-    customer_name: "Nguyễn Văn A",
-  },
-  {
-    id: 3,
-    address: "Tầng 9 - Tòa nhà 3D Center - Cầu Giấy",
-    phone_number: "0123456789",
-    customer_name: "Nguyễn Văn B",
-  },
-  {
-    id: 4,
-    address: "123 Đường Nguyễn Văn A, Quận 1, TP.HCM",
-    phone_number: "0123456789",
-    customer_name: "Nguyễn Văn C",
-  }
-]
-
-const orderDetails = {
-  id: 1,
-  restaurantName: "Nhà hàng Món ngon Việt",
-  restaurantAddress: "123 Đường Nguyễn Văn A, Quận 1, TP.HCM",
-  restaurantPhone: "0123 456 789",
-  customerName: "Nguyễn Văn B",
-  customerAddress: "456 Đường Lê Lợi, Quận 2, TP.HCM",
-  customerPhone: "0987 654 321",
-  totalPrice: 450000,
-  orderStatus: "Đang xử lý",
-  estimatedTime: "30 phút",
-  restaurantImage: "https://th.bing.com/th/id/R.7135c22d4bd7fa00aabb47c8fa076130?rik=rD9im5Tkd6wKcg&pid=ImgRaw&r=0",  // Thay bằng URL hình ảnh thực tế
-  foodItems: [
-    { id: 1, name: "Phở bò", price: 75000 },
-    { id: 2, name: "Bún chả", price: 60000 },
-  ],
-  promotions: [
-    { id: 1, name: "Giảm giá 10% cho đơn hàng trên 300,000 đ" },
-  ],
-  paymentMethod: "Đã thanh toán online",
-};
+import { ADDRESS, DISCOUNT_BY_LEVEL, DISCOUNT_CODES, MAP_ORDER_STATUS, ORDER_STATUS, baseUrl, dishesData, restaurantsData } from "../../constants";
+import { urlFor } from "../../sanity";
+import { customerModel } from "../../models/customer.model";
+import { trigerRefresh } from "../../slices/restaurantSlice";
 
 const getStepIndicatorIconConfig = ({
   position,
@@ -154,26 +80,14 @@ const titleMap = [
 
 const OrderDetailScreen = ({ navigation, route }) => {
   const { isConfirmMode } = route.params || { isConfirmMode: true };
+  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = React.useState(0);
-  const [addressIndex, setAdderssIndex] = React.useState(0);
-  const [showSelectAddressModal, setShowSelectAddressModal] = React.useState(false);
+  const [orderDetail, setOrderDetail] = React.useState(null);
   const currentUser = useSelector(selectUser);
   const _restaurantView = currentUser?.user?.isRestaurant;
   const _customerConfirmModeView = !_restaurantView && isConfirmMode;
   const _customerOrderModeView = !_restaurantView && isConfirmMode;
-  const [addAddress, setAddAddress] = React.useState(false);
-  const [addressName, setAddressName] = React.useState("");
-  const [addressPhone, setAddressPhone] = React.useState("");
-  const [customerName, setCustomerName] = React.useState("");
-  const [discountCodeIndex, setDiscountCodeIndex] = React.useState(-1);
-  const [showDiscountCodeModal, setShowDiscountCodeModal] = React.useState(false);
 
-  React.useEffect(() => {
-    setAddAddress(false);
-    setAddAddress("");
-    setAddressPhone("");
-    setCustomerName("");
-  }, [showSelectAddressModal])
 
   const onStepPress = (position) => {
     setCurrentPage(position);
@@ -184,6 +98,7 @@ const OrderDetailScreen = ({ navigation, route }) => {
       headerLeft: () => (
         <TouchableOpacity className="mr-8" onPress={() => {
           if (currentUser?.user?.isRestaurant) {
+            dispatch(trigerRefresh())
             navigation.navigate("RestaurantDashboard")
           } else {
             navigation.navigate("OrderList")
@@ -200,6 +115,55 @@ const OrderDetailScreen = ({ navigation, route }) => {
       title: 'Chi tiết đơn hàng',
     });
   }, [navigation]);
+
+  React.useEffect(() => {
+    const orderId = route.params?.orderId;
+    if (!orderId) return;
+    fetch(baseUrl + '/orders/' + orderId, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log('json', json);
+        const restaurant = restaurantsData.find((restaurant) => restaurant._id === json.restaurantId);
+        const customer = customerModel.findOne(json.customerId);
+        setCurrentPage(json.status || 0);
+        const order = {
+          ...json,
+          restaurantName: restaurant.name,
+          restaurantAddress: restaurant.address,
+          restaurantPhone: "0977856383",
+          customerName: json.phone_number,
+          customerAddress: json.address,
+          customerPhone: json.phone_number,
+          totalPrice: 450000,
+          orderStatus: MAP_ORDER_STATUS[json.status] || "Đang xử lý",
+          estimatedTime: "30 phút",
+          restaurantImage: restaurant.image,  // Thay bằng URL hình ảnh thực tế
+          foodItems: json.dishes.map((dish) => {
+            const dishData = dishesData.find((d) => d._id === dish.dishId);
+            return {
+              id: dish.dishId,
+              name: dishData.name,
+              price: dishData.price,
+              quantity: dish.quantity,
+              image: dishData.image,
+            }
+          }),
+          promotions: [
+            { id: 1, name: "Giảm giá 10% cho đơn hàng trên 300,000 đ" },
+          ],
+          paymentMethod: json.payment_method,
+        }
+        setOrderDetail(order);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }, []);
 
   const renderStepIndicator = (params) => {
     const colorMap = (status) => {
@@ -231,337 +195,185 @@ const OrderDetailScreen = ({ navigation, route }) => {
   }
 
   const handleNextStep = () => {
-    if (currentPage < 2) {
-      setCurrentPage(currentPage + 1);
-    } else {
-      navigation.navigate("OrderList");
-    }
+    handleUpdateOrderStatus((orderDetail.status || 0) + 1)
   }
 
-  const handleOrder = () => {
-    navigation.navigate("Prepare");
-  }
-
-  const handleCancelOrder = () => {
-    navigation.navigate("OrderList");
-  }
-
-  const handleAddAddress = () => {
-    if (!addressName || !addressPhone || !customerName) return;
-    address.push({
-      id: address.length + 1,
-      address: addressName,
-      phone_number: addressPhone,
-      customer_name: customerName,
-    });
-    setAdderssIndex(address.length - 1);
-    setShowSelectAddressModal(false);
+  const handleUpdateOrderStatus = (status = 0) => {
+    fetch(baseUrl + '/orders/' + orderDetail._id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: status,
+      }),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (_restaurantView) {
+          dispatch(trigerRefresh())
+          navigation.navigate("RestaurantDashboard");
+        } else {
+          navigation.navigate("Home");
+        }
+      })
   }
 
   return (
-    <ScrollView>
-      <View className="bg-white p-4 mb-4 shadow-md rounded-md">
-        {
-          !isConfirmMode ? <View style={styles.stepIndicator}>
-            <StepIndicator
-              customStyles={indicatorStyles}
-              currentPosition={currentPage}
-              onPress={onStepPress}
-              stepCount={3}
-              renderStepIndicator={renderStepIndicator}
-              labels={[
-                'Chờ xác nhận',
-                'Đang giao hàng',
-                'Nhận hàng',
-              ]}
-            />
-          </View> : null
-        }
-        <View className="flex-row gap-2 mt-2">
-          <Image
-            source={{ uri: orderDetails.restaurantImage }}
-            style={{ width: 80, height: 80, borderRadius: 8 }}
-          />
-          <View>
-            <Text className="text-lg font-semibold">{orderDetails.restaurantName}</Text>
-            <Text className="text-gray-600">{orderDetails.restaurantAddress}</Text>
-            <Text className="text-gray-600">SĐT nhà hàng: {orderDetails.restaurantPhone}</Text>
-          </View>
-        </View>
+    <>
+      {
+        orderDetail ?
+          (
+            <ScrollView>
+              <View className="bg-white p-4 mb-4 shadow-md rounded-md">
+                {
+                  orderDetail.status === ORDER_STATUS.HOAN_THANH ? <Text className="text-lg font-semibold" style={{ color: '#00ccbb' }}>Đơn hàng đã hoàn thành</Text> : null
+                }
+                {
+                  orderDetail.status === ORDER_STATUS.DA_HUY ? <Text className="text-lg font-semibold" style={{ color: '#fb6060' }}>Đơn hàng bị hủy</Text> : null
+                }
+                {
+                  orderDetail.status < 2 ? 
+                    <View style={styles.stepIndicator}>
+                      <StepIndicator
+                        customStyles={indicatorStyles}
+                        currentPosition={currentPage}
+                        onPress={onStepPress}
+                        stepCount={3}
+                        renderStepIndicator={renderStepIndicator}
+                        labels={[
+                          'Chờ xác nhận',
+                          'Đang giao hàng',
+                          'Nhận hàng',
+                        ]}
+                      />
+                    </View> : null
+                }
+                <View className="flex-row gap-2 mt-2">
+                  <Image
+                    source={{
+                      uri: urlFor(orderDetail.restaurantImage).url(),
+                    }}
+                    style={{ width: 80, height: 80, borderRadius: 8 }}
+                  />
+                  <View>
+                    <Text className="text-lg font-semibold">{orderDetail.restaurantName}</Text>
+                    <Text className="text-gray-600">Địa chỉ: {orderDetail.restaurantAddress}</Text>
+                    <Text className="text-gray-600">Số điện thoại: {orderDetail.restaurantPhone}</Text>
+                  </View>
+                </View>
 
-        <View
-          className="flex-row items-center"
-          style={{
-            justifyContent: 'space-between'
-          }}
-        >
-          <View>
-            <Text className="text-lg font-semibold mt-4">Thông tin khách hàng</Text>
-          </View>
-          {
-            _customerConfirmModeView ? 
-              <View> 
-                <TouchableOpacity onPress={() => setShowSelectAddressModal(true)}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '500',
-                    }} 
-                    className="text-[#00ccbb]"
-                  >
-                    sửa
-                  </Text>
-                </TouchableOpacity>
-              </View> : null
-          }
-        </View>
-        <View
-          className="flex-row items-center"
-          style={{
-            justifyContent: 'space-between'
-          }}
-        >
-          <View>
-            <Text className="text-gray-600">Tên khách hàng: {address[addressIndex].customer_name}</Text>
-            <Text className="text-gray-600">Địa chỉ: {address[addressIndex].address}</Text>
-            <Text className="text-gray-600">Số điện thoại: {address[addressIndex].phone_number}</Text>
-          </View>
-        </View>
-
-        <Text className="text-lg font-semibold mt-2">Thông tin đơn hàng</Text>
-
-        {orderDetails.foodItems.map((food) => (
-          <View key={food.id} className="flex-row gap-2 mt-2">
-            <Image
-              source={{ uri: orderDetails.restaurantImage }}
-              style={{ width: 64, height: 64, borderRadius: 8 }}
-            />
-            <View>
-              <Text className="text-lg font-semibold">{food.name}</Text>
-              <Text className="text-gray-600">Giá thành: {food.price.toFixed(2)} vnđ</Text>
-              <Text className="text-gray-600">Số lượng: 1</Text>
-            </View>
-          </View>
-        ))}
-
-        <View className="mt-4">
-          <Text className="text-gray-600">Trạng thái đơn hàng: {orderDetails.orderStatus}</Text>
-          <Text className="text-gray-600">Thời gian dự kiến: {orderDetails.estimatedTime}</Text>
-        </View>
-
-        <View
-          className="flex-row items-center"
-          style={{
-            justifyContent: 'space-between'
-          }}
-        >
-          <View>
-            <Text className="text-lg font-semibold mt-4">Mã giảm giá</Text>
-          </View>
-          {
-            _customerConfirmModeView ? 
-              <View> 
-                <TouchableOpacity onPress={() => setShowDiscountCodeModal(true)}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '500',
-                    }} 
-                    className="text-[#00ccbb]"
-                  >
-                    chọn mã
-                  </Text>
-                </TouchableOpacity>
-              </View> : null
-          }
-        </View>
-        <View>
-          <Text className="text-gray-600">{ discountCodeIndex >= 0 ? discountCodes[discountCodeIndex].code : "Chưa sử dụng mã giảm giá" }</Text>
-        </View>
-
-        <View className="mt-4">
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Giá đơn hàng</Text>
-            <Text>{orderDetails.totalPrice.toFixed(2)} vnđ</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Khuyến mại</Text>
-            <Text>-20000.00 vnđ</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-gray-600">Tổng</Text>
-            <Text>40000.00 vnđ</Text>
-          </View>
-        </View>
-
-        <Text className="text-lg font-semibold mt-4">Phương thức thanh toán</Text>
-        <Text className="text-gray-600">{orderDetails.paymentMethod}</Text>
-
-        {
-          _restaurantView ? 
-            <TouchableOpacity
-              className="rounded-lg bg-[#00ccbb] p-4 shadow-xl mt-8"
-              onPress={handleNextStep}
-            >
-              <Text className="text-center text-white text-lg font-bold">{ titleMap[currentPage] }</Text>
-            </TouchableOpacity> : 
-            (
-              !isConfirmMode ? 
-                <TouchableOpacity
-                  className="rounded-lg bg-[#00ccbb] p-4 shadow-xl mt-8"
-                  onPress={handleCancelOrder}
-                >
-                  <Text className="text-center text-white text-lg font-bold">Hủy đơn hàng</Text>
-                </TouchableOpacity> : 
-                <TouchableOpacity
-                  className="rounded-lg bg-[#00ccbb] p-4 shadow-xl mt-8"
-                  onPress={handleOrder}
-                >
-                  <Text className="text-center text-white text-lg font-bold">Đặt hàng</Text>
-                </TouchableOpacity>
-            )
-        }
-      </View>
-
-      <Modal
-        animationType="slide"
-        visible={showSelectAddressModal}
-        onRequestClose={() => {
-          setShowSelectAddressModal(!showSelectAddressModal);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={{
-            padding: 22,
-          }}>
-            <View className="p-4 bg-white shadow-sm">
-              <View>
-                <Text className="text-lg font-bold">Chọn địa chỉ nhận hàng</Text>
-              </View>
-
-              <TouchableOpacity
-                onPress={() => setShowSelectAddressModal(!showSelectAddressModal)}
-                className="rounded-full absolute top-3 right-2"
-              >
-                <XMarkIcon color="#00ccbb" height={40} width={40} />
-              </TouchableOpacity>
-            </View>
-
-            <View className="p-2">
-              <TouchableOpacity
-                onPress={() => setAddAddress(!addAddress)}
-              >
-                <Text
+                <View
+                  className="flex-row items-center"
                   style={{
-                    fontSize: 16,
-                    fontWeight: '500',
-                  }} 
-                  className="text-[#00ccbb]"
+                    justifyContent: 'space-between'
+                  }}
                 >
-                  { !addAddress ? "Thêm địa chỉ" : "Hủy" }
-                </Text>
-              </TouchableOpacity>
-              {
-                addAddress ? (
-                  <>
-                    <InputField
-                      label={'Tên người nhận'}
-                      value={customerName}
-                      onChangeText={setCustomerName}
-                    />
-                    <InputField
-                      label={'Địa chỉ nhận'}
-                      value={addressName}
-                      onChangeText={setAddressName}
-                    />
-                    <InputField
-                      label={'Số điện thoại'}
-                      value={addressPhone}
-                      onChangeText={setAddressPhone}
-                    />
-                    <TouchableOpacity
-                      className="rounded-lg bg-[#00ccbb] p-2 shadow-xl mt-2"
-                      onPress={handleAddAddress}
-                    >
-                      <Text className="text-center text-white text-lg font-bold">Thêm địa chỉ</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : null
-              }
-            </View>
-  
-            {
-              address.map((item, index) => (
-                <View
-                  key={index}
-                  className="p-2 bg-white shadow-sm mt-2 border border-gray-400"
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setAdderssIndex(index);
-                      setShowSelectAddressModal(!showSelectAddressModal);
-                    }}
-                  >
-                    <View className="flex-row items-center">
-                      <Text className="text-lg font-semibold">{item.customer_name}</Text>
-                      <Text className="text-gray-600 ml-2">{item.phone_number}</Text>
-                    </View>
-                    <Text className="text-gray-600">{item.address}</Text>
-                  </TouchableOpacity>
+                  <View>
+                    <Text className="text-lg font-semibold mt-4">Thông tin khách hàng</Text>
+                  </View>
                 </View>
-              ))
-            }
-          </View>
-        </View>
-      </Modal>
+                <View
+                  className="flex-row items-center"
+                  style={{
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <View>
+                    <Text className="text-gray-600">Tên khách hàng: {currentUser.user.name}</Text>
+                    <Text className="text-gray-600">Địa chỉ: {orderDetail.address}</Text>
+                    <Text className="text-gray-600">Số điện thoại: {orderDetail.phone_number}</Text>
+                  </View>
+                </View>
 
-      <Modal
-        animationType="slide"
-        visible={showDiscountCodeModal}
-        onRequestClose={() => {
-          setShowDiscountCodeModal(!showDiscountCodeModal);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            padding: 22,
-          }}>
-            <View className="p-4 bg-white shadow-sm">
-              <View>
-                <Text className="text-lg font-bold">Chọn mã giảm giá</Text>
+                <Text className="text-lg font-semibold mt-2">Thông tin đơn hàng</Text>
+
+                {orderDetail.foodItems.map((food) => (
+                  <View key={food.id} className="flex-row gap-2 mt-2">
+                    <Image
+                      source={{
+                        uri: urlFor(food.image).url(),
+                      }}
+                      style={{ width: 64, height: 64, borderRadius: 8 }}
+                    />
+                    <View>
+                      <Text className="text-lg font-semibold">{food.name}</Text>
+                      <Text className="text-gray-600">Giá thành: {food.price.toFixed(2)} vnđ</Text>
+                      <Text className="text-gray-600">Số lượng: {food.quantity}</Text>
+                    </View>
+                  </View>
+                ))}
+
+                <View className="mt-4">
+                  <Text className="text-gray-600">Trạng thái đơn hàng: {orderDetail.orderStatus}</Text>
+                  <Text className="text-gray-600">Thời gian dự kiến: {orderDetail.estimatedTime}</Text>
+                </View>
+
+                <View className="mt-4">
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600">Tổng tiền</Text>
+                    <Text>{orderDetail.total_price} vnđ</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600">Phí vận chuyển</Text>
+                    <Text>15000 vnđ</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600">Giảm giá từ tích điểm {currentUser.user.level ? `(-${DISCOUNT_BY_LEVEL[currentUser.user.level]}%)` : ''}</Text>
+                    <Text>- {orderDetail.discount_level} vnđ</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600">Khuyến mại từ mã giảm giá</Text>
+                    <Text>- { orderDetail.discount } vnđ</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600">Tổng</Text>
+                    <Text>{ orderDetail.completed_price } vnđ</Text>
+                  </View>
+                </View>
+
+                <Text className="text-lg font-semibold mt-4">Phương thức thanh toán</Text>
+                <Text className="text-gray-600">{orderDetail.paymentMethod}</Text>
+
+                {
+                  orderDetail.status < 2 ? (
+                    _restaurantView ? 
+                      (
+                        <>
+                          <TouchableOpacity
+                            className="rounded-lg bg-[#00ccbb] p-4 shadow-xl mt-8"
+                            onPress={handleNextStep}
+                          >
+                            <Text className="text-center text-white text-lg font-bold">{ titleMap[currentPage] }</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            className="rounded-lg bg-[#fb6060] p-4 shadow-xl mt-2"
+                            onPress={() => handleUpdateOrderStatus(3)}
+                          >
+                            <Text className="text-center text-white text-lg font-bold">Hủy đơn hàng</Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : 
+                      (
+                          <TouchableOpacity
+                            className="rounded-lg bg-[#fb6060] p-4 shadow-xl mt-8"
+                            onPress={() => handleUpdateOrderStatus(3)}
+                          >
+                            <Text className="text-center text-white text-lg font-bold">Hủy đơn hàng</Text>
+                          </TouchableOpacity>
+                      )
+                  ) : null
+                }
               </View>
-
-              <TouchableOpacity
-                onPress={() => setShowDiscountCodeModal(!showDiscountCodeModal)}
-                className="rounded-full absolute top-3 right-2"
-              >
-                <XMarkIcon color="#00ccbb" height={40} width={40} />
-              </TouchableOpacity>
+            </ScrollView>
+          ) :
+          (
+            <View className="flex-1 justify-center items-center">
+              <Text>Loading...</Text>
             </View>
-
-            {
-              discountCodes.map((item, index) => (
-                <View
-                  key={index}
-                  className="p-2 bg-white shadow-sm mt-2 border border-gray-400"
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setDiscountCodeIndex(index);
-                      setShowDiscountCodeModal(!showDiscountCodeModal);
-                    }}
-                  >
-                    <View className="">
-                      <Text className="text-lg font-semibold">{item.code}</Text>
-                      <Text className="text-gray-600 ml-2">{item.condition} vnđ</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))
-            }
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+          )
+      }
+    </>
   );
 };
 

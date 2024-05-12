@@ -5,6 +5,9 @@ import { ArrowLeftIcon, ChevronDoubleRightIcon } from "react-native-heroicons/ou
 import OrderList from "../../components/OrderList";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import useWindowDimensions from "react-native/Libraries/Utilities/useWindowDimensions";
+import { ORDER_STATUS, baseUrl, restaurantsData } from "../../constants";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../slices/userSlice";
 
 export const orders = [
   {
@@ -110,8 +113,19 @@ const LICH_SU = 'LICH_SU';
 const DA_HUY = 'DA_HUY';
 
 const OrderListScreen = () => {
+  const userData = useSelector(selectUser);
   const navigation = useNavigation();
   const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: DANG_GIAO, title: 'Đang giao' },
+    { key: LICH_SU, title: 'Lịch sử' },
+    { key: DA_HUY, title: 'Đã hủy' },
+  ]);
+  const [shippingOrders, setShippingOrders] = useState([]);
+  const [historyOrders, setHistoryOrders] = useState([]);
+  const [cancelOrders, setCancelOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -130,13 +144,37 @@ const OrderListScreen = () => {
       title: 'Danh sách đơn hàng',
     });
   }, [navigation]);
-  
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: DANG_GIAO, title: 'Đang giao' },
-    { key: LICH_SU, title: 'Lịch sử' },
-    { key: DA_HUY, title: 'Đã hủy' },
-  ]);
+
+  React.useEffect(() => {
+    setIsLoading(true);
+    fetch(baseUrl + "/orders/customer-orders/" + userData.user.id, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        responseJson = responseJson.map((order) => {
+          const restaurant = restaurantsData.find((restaurant) => restaurant._id === order.restaurantId);
+          return {
+            ...order,
+            id: order._id,
+            restaurantImage: restaurant.image,
+            restaurantName: restaurant.name,
+            totalPrice: order.completed_price,
+            orderStatus: "Đang chờ duyệt",
+            estimatedTime: "30 minutes",
+          };
+        }).sort((a, b) => {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        setShippingOrders(responseJson.filter((order) => order.status === ORDER_STATUS.DANG_GIAO || order.status === ORDER_STATUS.DA_DAT_HANG));
+        setHistoryOrders(responseJson);
+        setCancelOrders(responseJson.filter((order) => order.status === ORDER_STATUS.DA_HUY));
+        setIsLoading(false);
+      })
+  }, []);
 
   const renderTabBar = props => (
     <TabBar
@@ -153,38 +191,47 @@ const OrderListScreen = () => {
     setIndex(newIndex);
   }
 
-  const DishesTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const ShipingOrdersTab = () => (
+    <OrderList orders={shippingOrders}></OrderList>
   );
   
-  const OrdersTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const HistoryOrdersTab = () => (
+    <OrderList orders={historyOrders}></OrderList>
   );
   
-  const PromotionsTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const CancelOrdersTab = () => (
+    <OrderList orders={cancelOrders}></OrderList>
   );
   
   const renderScene = SceneMap({
-    [DANG_GIAO]: DishesTab,
-    [LICH_SU]: OrdersTab,
-    [DA_HUY]: PromotionsTab,
+    [DANG_GIAO]: ShipingOrdersTab,
+    [LICH_SU]: HistoryOrdersTab,
+    [DA_HUY]: CancelOrdersTab,
   });
 
   return (
     <>
-      <TabView
-        index={index}
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-        sceneContainerStyle={{ backgroundColor: 'white' }}
-        pagerStyle={{ backgroundColor: 'white' }}
-        style={{ backgroundColor: 'white' }}
-      />
-      {/* <OrderList orders={orders}></OrderList> */}
+      {
+        !isLoading ? 
+          (
+            <TabView
+              index={index}
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              renderTabBar={renderTabBar}
+              onIndexChange={setIndex}
+              initialLayout={{ width: layout.width }}
+              sceneContainerStyle={{ backgroundColor: 'white' }}
+              pagerStyle={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: 'white' }}
+            />
+          ) :
+          (
+            <View className="flex-1 justify-center items-center">
+              <Text className="text-lg font-semibold">Đang tải dữ liệu...</Text>
+            </View>
+          )
+      }
     </>
   );
 };

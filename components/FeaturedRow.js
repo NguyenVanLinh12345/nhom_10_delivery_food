@@ -11,7 +11,6 @@ function FeaturedRow({ title, description, id }) {
 
   useEffect(() => {
     setRestaurants(restaurantsData)
-    console.log("FeaturedRow", restaurantsData);
   }, []);
 
   return (

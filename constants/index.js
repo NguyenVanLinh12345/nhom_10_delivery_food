@@ -1,4 +1,4 @@
-export const baseUrl = 'https://602c-27-73-8-142.ngrok-free.app';
+export const baseUrl = 'https://5636-117-1-97-214.ngrok-free.app';
 
 export const featuredCategoriesData = [
   {
@@ -6,11 +6,9 @@ export const featuredCategoriesData = [
     "_id": "91b64696-2f1e-45db-8162-7c20a476331c",
     "_rev": "4QA54HOcDc8FiINM5T83tl",
     "_type": "featured",
-    "_updatedAt":
-      "2023-02-17T18:29:47Z",
+    "_updatedAt": "2023-02-17T18:29:47Z",
     "name": "Nếm thử sự khác biệt",
-    "short_description":
-      "Ngon, tươi, độc đáo, thơm ngon, chất lượng. "
+    "short_description": "Ngon, tươi, độc đáo, thơm ngon, chất lượng. "
   },
   {
     "_createdAt": "2023-02-17T15:18:05Z",
@@ -40,8 +38,7 @@ export const featuredCategoriesData = [
     "short_description": "Ngon miệng, đa dạng, thơm ngon, kem, giòn"
   }
 ];
-
-const dishes = [
+export const dishesData = [
   {
     "_createdAt": "2023-02-10T16:53:58Z",
     "_id": "4ef33936-7846-4221-9c35-d527c6187a62",
@@ -59,8 +56,8 @@ const dishes = [
   {
     "_createdAt": "2023-02-12T20:09:25Z",
     "_id": "cda89636-582b-4c51-8634-4b38d88bf542",
-    "_rev": "y9vPMxf9gLnmeHqu0wpdaK", "_type":
-      "dish",
+    "_rev": "y9vPMxf9gLnmeHqu0wpdaK", 
+    "_type": "dish",
     "_updatedAt": "2023-02-12T20:09:25Z",
     "image": {
       "_type": "image", 
@@ -89,7 +86,7 @@ const dishes = [
 export const restaurantsData = [
   {
     "_createdAt": "2023-02-10T16:48:35Z",
-    "_id": "44eabeb1-9fd8-4c67-867b-1edfe6e97ee0",
+    "_id": "663bb63b5208bb13e2504d5d",
     "_rev": "IaiTeP5TizMkFOqFMXU1G2",
     "_type": "restaurant",
     "_updatedAt": "2023-02-17T19:06:12Z",
@@ -98,14 +95,14 @@ export const restaurantsData = [
     "lat": 18.953201969352946,
     "long": 72.81665850812362,
     "name": "Nhà hàng cỏ mây",
-    "dishes": dishes,
+    "dishes": dishesData,
     "rating": 4.5, 
     "short_description": "Chúng tôi cung cấp nhiều món ăn ngon để kích thích vị giác của bạn.",
     "type": { "name": "South Asian" }
   },
   {
     "_createdAt": "2023-02-17T18:31:06Z",
-    "_id": "2d78bd7b-54f9-4a25-9aa0-83708ee25ede",
+    "_id": "663bc6e0c677e239ebaff340",
     "_rev": "IaiTeP5TizMkFOqFMXU6Rq",
     "_type": "restaurant",
     "_updatedAt": "2023-02-17T19:06:31Z",
@@ -115,18 +112,18 @@ export const restaurantsData = [
     "long": -73.450036,
     "name": "Quán ăn hạnh phúc",
     "rating": 5,
-    "dishes": dishes,
+    "dishes": dishesData,
     "short_description": "Một địa điểm thú vị cho ẩm thực Mỹ hiện đại",
     "type": { "name": "IItalian" }
   },
   {
     "_createdAt": "2023-02-17T15:23:37Z",
-    "_id": "3d5fddf8-8dbe-4945-9c82-6c73037bf56b",
+    "_id": "663c1eb3e187ae4815ed7f6d",
     "_rev": "4QA54HOcDc8FiINM5T70Gc",
     "_type": "restaurant",
     "_updatedAt": "2023-02-17T18:25:31Z",
     "address": "Đường trần phú, Hà Nội",
-    "dishes": dishes,
+    "dishes": dishesData,
     "image": { "_type": "image", "asset": { "_ref": "image-3775e7a9721104a3f01e49b3528a34fe568668fb-1170x780-png", "_type": "reference" } },
     "lat": 37.2, "long": -122.3,
     "name": "Quán ăn vui vẻ",
@@ -136,3 +133,84 @@ export const restaurantsData = [
     "type": { "name": "Mexican" }
   }
 ]
+
+export const DISCOUNT_BY_LEVEL = {
+  0: 0,
+  1: 5,
+  2: 8,
+  3: 10
+}
+
+export const DISCOUNT_CODES = [
+  {
+    id: 0,
+    code: "Chọn mã giảm giá",
+    discount: 0,
+    condition: 0,
+  },
+  {
+    id: 1,
+    code: "Giảm 10k cho đơn hàng trên 100k",
+    discount: 10000,
+    condition: 100000,
+  },
+  {
+    id: 2,
+    code: "Giảm 20k cho đơn hàng trên 200k",
+    discount: 20000,
+    condition: 200000,
+  },
+  {
+    id: 3,
+    code: "Giảm 30k cho đơn hàng trên 300k",
+    discount: 30000,
+    condition: 300000,
+  },
+  {
+    id: 4,
+    code: "Giảm 40k cho đơn hàng trên 400k",
+    discount: 40000,
+    condition: 400000,
+  }
+]
+
+export const ADDRESS = [
+  {
+    id: 0,
+    address: "62 Đa sĩ, Kiến Hưng, Hà Đông",
+    phone_number: "0123456789",
+    customer_name: "Trần Thanh Thế",
+  },
+  {
+    id: 1,
+    address: "L10 Tầng 10 - Tòa Vincom Center - Quận 1",
+    phone_number: "0123456789",
+    customer_name: "Nguyễn Văn A",
+  },
+  {
+    id: 2,
+    address: "Tầng 9 - Tòa nhà 3D Center - Cầu Giấy",
+    phone_number: "0123456789",
+    customer_name: "Nguyễn Văn B",
+  },
+  {
+    id: 3,
+    address: "123 Đường Nguyễn Văn A, Quận 1, TP.HCM",
+    phone_number: "0123456789",
+    customer_name: "Nguyễn Văn C",
+  }
+]
+
+export const ORDER_STATUS = {
+  DA_DAT_HANG: 0,
+  DANG_GIAO: 1,
+  HOAN_THANH: 2,
+  DA_HUY: 3
+}
+
+export const  MAP_ORDER_STATUS = {
+  0: "Đã đặt hàng",
+  1: "Đang giao",
+  2: "Hoàn thành",
+  3: "Đã hủy"
+}

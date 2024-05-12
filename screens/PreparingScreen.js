@@ -1,13 +1,12 @@
-import { View, Text } from "react-native";
 import React, { useEffect } from "react";
 import * as Animatable from "react-native-animatable";
 import * as Progress from "react-native-progress";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const PreparingScreen = ({ navigation }) => {
+const PreparingScreen = ({ navigation, route }) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate({ name: "OrderDetail", params: { isConfirmMode: false } });
+      navigation.navigate({ name: "OrderDetail", params: { isConfirmMode: false, orderId: route.params.orderId } });
     }, 2000);
   }, [navigation]);
 

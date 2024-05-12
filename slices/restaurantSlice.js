@@ -11,6 +11,7 @@ const initialState = {
     short_description: null,
     dishes: null,
   },
+  trigerRefresh: false,
 };
 
 export const restaurantSlice = createSlice({
@@ -20,15 +21,20 @@ export const restaurantSlice = createSlice({
 
     setRestaurant  : (state ,  action) => {
         state.restaurant  = action.payload
-    }
+    },
+
+    trigerRefresh: (state) => {
+      state.trigerRefresh = !state.trigerRefresh;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setRestaurant } = restaurantSlice.actions;
+export const { setRestaurant, trigerRefresh } = restaurantSlice.actions;
 
 
 export const selectRestaurant  = (state) => state.restaurant.restaurant
+export const selectTrigerRefresh = (state) => state.restaurant.trigerRefresh;
 
 
 export default restaurantSlice.reducer;

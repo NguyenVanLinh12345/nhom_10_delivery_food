@@ -32,7 +32,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (!customer || (!customer?.user?.id && !customer?.user?._id)) {
-      console.log("Redirecting to login screen", customer);
+      console.log("Redirecting to login screen");
       navigation.navigate("Login");
     }
 
@@ -70,9 +70,9 @@ const HomeScreen = () => {
             navigation.navigate("OrderList");
           }} size={25} color="#00CCBB" />
           {/* Đây là icon người, dùng để login */}
-          <UserIcon onPress={() => {
+          {/* <UserIcon onPress={() => {
             navigation.navigate("Login");
-          }} size={25} color="#00CCBB" />
+          }} size={25} color="#00CCBB" /> */}
 
         </View>
 

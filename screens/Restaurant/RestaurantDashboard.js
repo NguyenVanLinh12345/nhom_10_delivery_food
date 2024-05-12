@@ -10,13 +10,16 @@ import {
   Bars3Icon,
   PencilIcon
 } from "react-native-heroicons/solid";
-import { useSelector } from "react-redux";
-import { selectUser } from "../../slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, setUser } from "../../slices/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import useWindowDimensions from "react-native/Libraries/Utilities/useWindowDimensions";
 import OrderList from "../../components/OrderList";
-import { orders } from "../Order/OrderListScreen";
+import { ORDER_STATUS, baseUrl, restaurantsData } from "../../constants";
+import { customerModel } from "../../models/customer.model";
+import { selectTrigerRefresh } from "../../slices/restaurantSlice";
+import { PowerIcon } from "react-native-heroicons/outline";
 
 const DANG_GIAO = 'DANG_GIAO';
 const LICH_SU = 'LICH_SU';
@@ -24,11 +27,16 @@ const DA_HUY = 'DA_HUY';
 
 const RestaurantDashboardScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const currentUser = useSelector(selectUser);
   const [restaurant, setRestaurant] = useState({});
-  const [isModal, setIsModal] = useState(false);
+  const [confirmOrders, setConfirmOrders] = useState([]);
+  const [shippingOrders, setShippingOrders] = useState([]);
+  const [historyOrders, setHistoryOrders] = useState([]);
+  const trigerRefresh = useSelector(selectTrigerRefresh);
+  const [isLoading, setIsLoading] = useState(false);
 
   let {
     id, imgUrl, title, rating, genre, address, short_description, long, lat
@@ -41,6 +49,43 @@ const RestaurantDashboardScreen = () => {
     }
     setRestaurant(currentUser.user);
   }, [currentUser]);
+
+  React.useEffect(() => {
+    if (!currentUser?.user?._id) return;
+    setIsLoading(true);
+    fetch(baseUrl + "/orders/restaurant-orders/" + currentUser.user._id, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        responseJson = responseJson.map((order) => {
+          const restaurant = restaurantsData.find((restaurant) => restaurant._id === order.restaurantId);
+          const customer = customerModel.findOne(order.customerId);
+          return {
+            ...order,
+            id: order._id,
+            isRestaurantView: true,
+            customerName: customer.name,
+            customerAddress: customer.address,
+            restaurantImage: restaurant.image,
+            restaurantName: restaurant.name,
+            totalPrice: order.completed_price,
+            orderStatus: "Đang chờ duyệt",
+            estimatedTime: "30 minutes",
+          };
+        }).sort((a, b) => {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        setConfirmOrders(responseJson.filter((order) => order.status === ORDER_STATUS.DA_DAT_HANG));
+        setShippingOrders(responseJson.filter((order) => order.status === ORDER_STATUS.DANG_GIAO));
+        setHistoryOrders(responseJson);
+        setIsLoading(false);
+      })
+
+  }, [trigerRefresh]);
 
   useEffect(() => {
     if (restaurant && restaurant.id) {
@@ -83,22 +128,47 @@ const RestaurantDashboardScreen = () => {
     setIndex(newIndex);
   }
 
-  const DishesTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const ConfirmOrdersTab = () => (
+    <>
+      {
+        isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <Text>Loading...</Text>
+          </View>
+        ) : <OrderList orders={confirmOrders}></OrderList>
+      }
+    </>
   );
 
-  const OrdersTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const ShipingOrdersTab = () => (
+    <>
+      {
+        isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <Text>Loading...</Text>
+          </View>
+        ) : <OrderList orders={shippingOrders}></OrderList>
+      }
+    </>
   );
   
-  const PromotionsTab = () => (
-    <OrderList orders={orders}></OrderList>
+  const CompletedOrdersTab = () => (
+    <>
+      {
+        isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <Text>Loading...</Text>
+          </View>
+        ) :
+        <OrderList orders={historyOrders}></OrderList>
+      }
+    </>
   );
   
   const renderScene = SceneMap({
-    [DANG_GIAO]: DishesTab,
-    [LICH_SU]: OrdersTab,
-    [DA_HUY]: PromotionsTab,
+    [DANG_GIAO]: ConfirmOrdersTab,
+    [LICH_SU]: ShipingOrdersTab,
+    [DA_HUY]: CompletedOrdersTab,
   });
 
   const handleEdit = () => {
@@ -110,10 +180,14 @@ const RestaurantDashboardScreen = () => {
       <View className="relative">
         <Image source={{ uri: imgUrl }} className="w-full h-56 bg-gray-300 p-4" />
         <TouchableOpacity
-          className="absolute top-14 left-5 p-2 bg-white rounded-full"
-          onPress={() => navigation.goBack(null)}
+          className="absolute top-14 left-5 p-1 bg-white rounded-full flex-row items-center gap-2"
+          onPress={() => {
+            navigation.goBack(null);
+            dispatch(setUser(null));
+          }}
         >
-          <Bars3Icon size={20} color="#00ccbb" />
+          <PowerIcon size={20} color="gray" />
+          <Text className='text-l'>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
 
@@ -140,10 +214,10 @@ const RestaurantDashboardScreen = () => {
             </View>
           </View>
           <Text className="text-gray-500 mt-2 pb-4">{short_description}</Text>
-          <Text classname="text-2xl font-bold">Dashboard >> Đơn hàng</Text>
+          <Text classname="text-2xl font-bold">Dashboard { '>>' } Đơn hàng</Text>
         </View>
       </View>
-
+      
       <TabView
         index={index}
         navigationState={{ index, routes }}
